@@ -31,7 +31,6 @@ async def load_whitelist():
 @app.agent(matched_topic)
 async def matched_certs(matches):
     async for match in matches:
-        print(match)
         url = '{0}://{1}'.format(match['proto'], match['value']).replace('*.', '')
         await Match(url).create('transparency', match['source'], match['input'], match['data'])
 
@@ -57,8 +56,10 @@ async def update_filters(matchers):
     async for matcher in matchers:
         if matcher['type'] == 'fuzzy':
             filters['fuzzy'] = [{'value':entry['value'], 'likelihood':entry['likelihood']} for entry in Fuzzy.objects()]
+
         elif matcher['type'] == 'whitelist':
             filters['whitelist'] = [entry['domain'] for entry in Whitelist.objects()]
+
         elif matcher['type'] == 'regex':
             filters['regex'] = []
             for entry in Regex.objects():

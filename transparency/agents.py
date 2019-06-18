@@ -29,7 +29,7 @@ async def get_records(sources):
     session = aiohttp.ClientSession(timeout=base_timeout)
     async for source in sources:
         results = await Records(source.source, session).get(states_table[source.source], source.size)
-        if results and 'entries' in results:
+        if results and results.get('entries'):
             await update_treesize.send(value={'source': source.source, 'size':source.size})
             for certificate in results['entries']:
                 await decode_certs.send(value=certificate)

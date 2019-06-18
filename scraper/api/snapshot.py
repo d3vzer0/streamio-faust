@@ -6,7 +6,7 @@ class Snapshot:
     def __init__(self, url):
         self.url = url
 
-    async def create(self, data):
+    def create(self, data):
         try:
             sha256 = hashlib.sha256(data).hexdigest()
             snapshot_output = Snapshots(url=self.url,sha256=sha256)

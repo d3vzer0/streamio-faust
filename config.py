@@ -17,7 +17,7 @@ config = {
         'blacklist': yaml.safe_load(open('streaming/transparency.yml'))['transparency']['blacklist']
     },
     'selenium': {
-        'host': os.getenv('GRID_HOST', 'localhost:4444'),
+        'host': os.getenv('GRID_HOST', 'hub:4444'),
         'browser': os.getenv('GRID_BROWSER', 'chrome')
     },
     "mongo": {

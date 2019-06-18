@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM ubuntu:bionic
 
 RUN apt-get update -y --fix-missing \
   && apt-get install -y \
@@ -29,5 +29,8 @@ ENV KAFKA_HOST="${KAFKA_HOST}"
 
 ARG DBHOST=mongodb
 ENV DBHOST="${DBHOST}"
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
 
 CMD ["faust", "-A", "streaming.app", "worker"]
