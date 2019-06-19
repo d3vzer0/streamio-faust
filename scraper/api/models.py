@@ -5,7 +5,10 @@ import datetime
 db.connect(
     db=config['mongo']['db'],
     host=config['mongo']['host'],
-    port=config['mongo']['port']
+    port=config['mongo']['port'],
+    username=config['mongo']['username'],
+    password=config['mongo']['password'],
+    authSource=config['mongo']['authsource']
 )
 
 class Responses(db.EmbeddedDocument):

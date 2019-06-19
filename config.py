@@ -23,7 +23,10 @@ config = {
     "mongo": {
         'db': 'phishyme',
         'host': os.getenv('DBHOST', 'localhost'),
-        'port': os.getenv('DBPORT', 27017)
+        'port': os.getenv('DBPORT', 27017),
+        'authsource': os.getenv('MONGO_AUTH', None),
+        'username': os.getenv('MONGO_USER', None),
+        'password': os.getenv('MONGO_PASS', None)
     },
     'stream': {
         'app': os.getenv('STREAM_TYPE', 'streaming.transparency'),
