@@ -20,7 +20,7 @@ async def get_tree_size(sources):
     session = aiohttp.ClientSession(timeout=base_timeout)
     async for source in sources:
         stats =  await Records(source, session).latest()
-        if (not source in states_table) or (stats['tree_size'] > states_table[source]):
+        if (source not in states_table) or (stats['tree_size'] > states_table[source]):
             await changed_topic.send(value={'source': source, 'size': stats['tree_size']}) 
 
 @app.agent(changed_topic, concurrency=50) 
