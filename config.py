@@ -24,13 +24,16 @@ config = {
         'db': 'phishyme',
         'host': os.getenv('DBHOST', 'localhost'),
         'port': os.getenv('DBPORT', 27017),
-        'authsource': os.getenv('MONGO_AUTH', None),
+        'authsource': os.getenv('MONGO_AUTH', ''),
         'username': os.getenv('MONGO_USER', None),
         'password': os.getenv('MONGO_PASS', None)
     },
     'stream': {
-        'app': os.getenv('STREAM_TYPE', 'streaming.transparency'),
-        'name': os.getenv('STREAM_NAME', 'nootnoot-transparency'),
+        'app': os.getenv('STREAM_TYPE', 'streaming.scraper'),
+        'name': os.getenv('STREAM_NAME', 'nootnoot-scraper'),
         'host': os.getenv('KAFKA_HOST', 'kafka://127.0.0.1:29092')
+    },
+    'selenium': {
+        'hub': os.getenv('SELENIUM_HUB', 'http://localhost:4444/wd/hub')
     }
 }

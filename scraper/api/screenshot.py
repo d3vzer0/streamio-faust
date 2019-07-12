@@ -1,8 +1,9 @@
 from streaming.scraper.api.snapshot import Snapshot
+from streaming.config import config
 from selenium import webdriver
 
 class Screenshot():
-    def __init__(self, url, grid='http://hub:4444/wd/hub', browser='chrome'):
+    def __init__(self, url, grid=config['selenium']['hub'], browser='chrome'):
         self.url = url
         self.grid = grid
         self.browser = browser
