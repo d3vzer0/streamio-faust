@@ -4,29 +4,29 @@ from streaming.wordmatching.api import Compare
 from streaming.app import app
 from streaming.config import config
 from fuzzywuzzy import fuzz
+from faust import web
 import csv
 import re
 
 # Topics
 cert_topic = app.topic('ct-certs-decoded')
-update_topic = app.topic('wordmatching-update')
 matched_topic = app.topic('wordmatching-hits')
  
 # Tables
 matching_table = app.Table('matching_table', default=list)
-filters = { 'regex': [], 'fuzzy': [], 'whitelist': [] }
-
-@app.task
-async def load_fuzzy():
-    await update_topic.send(value={'type':'fuzzy'})
+filters = { 'regex': [], 'regex_raw':[], 'fuzzy': [], 'whitelist': [] }
 
 @app.task
 async def load_regex():
-    await update_topic.send(value={'type':'regex'})
-
-@app.task
-async def load_whitelist():
-    await update_topic.send(value={'type':'whitelist'})
+    try:
+        filters['fuzzy'] = [{'value':entry['value'], 'likelihood':entry['likelihood']} for entry in Fuzzy.objects()]
+        filters['whitelist'] = [entry['domain'] for entry in Whitelist.objects()]
+        for entry in Regex.objects():
+            filters['regex_raw'].append(entry['value'])
+            filters['regex'].append(re.compile(entry['value']))
+    except Exception as err:
+        print('Invalid regex: {0}'.format(entry['value']))
+        pass
 
 @app.agent(matched_topic)
 async def matched_certs(matches):
@@ -50,21 +50,41 @@ async def fuzzy_match_ct(certificates):
             match_domain = Compare(domain, filters['whitelist']).fuzzy(filters['fuzzy'])
             if match_domain: await matched_topic.send(value={**match_domain, **{'proto':'https', 'data':certificate['entry'] } })
 
-@app.agent(update_topic)
-async def update_filters(matchers):
-    print(matchers)
-    async for matcher in matchers:
-        if matcher['type'] == 'fuzzy':
-            filters['fuzzy'] = [{'value':entry['value'], 'likelihood':entry['likelihood']} for entry in Fuzzy.objects()]
+# Debug filters view
+api_filters = web.Blueprint('api_filters')
 
-        elif matcher['type'] == 'whitelist':
-            filters['whitelist'] = [entry['domain'] for entry in Whitelist.objects()]
+@api_filters.route('/state', name='api_filters')
+class APIFilters(web.View):
+    async def get(self, request: web.Request) -> web.Response:
+        result = {'fuzzy':filters['fuzzy'], 'regex':filters['regex_raw'],
+            'whitelist':filters['whitelist']}
+        return self.json(result)
 
-        elif matcher['type'] == 'regex':
+@api_filters.route('/fuzzy', name='api_filters')
+class APIFuzzy(web.View):
+    async def get(self, request: web.Request) -> web.Response:
+        filters['fuzzy'] = [{'value':entry['value'], 'likelihood':entry['likelihood']} for entry in Fuzzy.objects()]
+        return self.json({'result': 'success', 'message':'Refreshed fuzzy'})
+
+@api_filters.route('/regex', name='api_filters')
+class APIRegex(web.View):
+    async def get(self, request: web.Request) -> web.Response:
+        try:
             filters['regex'] = []
+            filters['regex_raw'] = []
             for entry in Regex.objects():
-                try:
-                    filters['regex'].append(re.compile(entry['value']))
-                except Exception as err:
-                    print('Invalid regex: {0}'.format(entry['value']))
-                    pass
+                filters['regex_raw'].append(entry['value'])
+                filters['regex'].append(re.compile(entry['value']))
+        except Exception as err:
+            print('Invalid regex: {0}'.format(entry['value']))
+            pass
+        return self.json({'result': 'success', 'message':'Refreshed regex'})
+
+
+@api_filters.route('/whitelist', name='api_filters')
+class APIWhitelist(web.View):
+    async def get(self, request: web.Request) -> web.Response:
+        filters['whitelist'] = [entry['domain'] for entry in Whitelist.objects()]
+        return self.json({'result': 'success', 'message':'Refreshed whitelist'})
+
+app.web.blueprints.add('/filters/', api_filters)
