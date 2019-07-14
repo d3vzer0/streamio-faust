@@ -17,7 +17,7 @@ states_table = app.Table('ct-source-states', default=int)
 @app.agent(sources_topic, concurrency=50)
 async def get_tree_size(sources):
     base_timeout = aiohttp.ClientTimeout(total=10)
-    session = aiohttp.ClientSession(timeout=base_timeout)
+    session = aiohttp.ClientSession(timeout=base_timeout, trust_env=True)
     async for source in sources:
         stats =  await Records(source, session).latest()
         if stats and ((source not in states_table) or (stats['tree_size'] > states_table[source])):
@@ -26,7 +26,7 @@ async def get_tree_size(sources):
 @app.agent(changed_topic, concurrency=50) 
 async def get_records(sources):
     base_timeout = aiohttp.ClientTimeout(total=10)
-    session = aiohttp.ClientSession(timeout=base_timeout)
+    session = aiohttp.ClientSession(timeout=base_timeout, trust_env=True)
     async for source in sources:
         results = await Records(source.source, session).get(states_table[source.source], source.size)
         if results and results.get('entries'):

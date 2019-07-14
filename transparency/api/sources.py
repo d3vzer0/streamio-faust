@@ -6,7 +6,7 @@ class Sources:
         self.base_url = base_url
     
     async def get(self):
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.get(self.base_url) as response:
                 return await response.json()
 
