@@ -28,7 +28,7 @@ async def monitor_url(urls):
         # executor.submit(Screenshot(url['url']).to_png())
 
 
-@app.timer(interval=10, on_leader=True)
+@app.timer(interval=900, on_leader=True)
 async def get_enabled():
     enabled_urls = Matches.objects(enabled=True)
     for match in enabled_urls:
