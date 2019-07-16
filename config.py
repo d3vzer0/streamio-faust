@@ -12,6 +12,9 @@ config = {
         'username': os.getenv('THREATSTREAM_USER', None),   
         'base_url': 'https://api.threatstream.com/api/v2'
     },
+    'urlscan': {
+        'base_url': 'https://urlscan.io/api/v1'
+    },
     'transparency': {
         'base_url': 'https://www.gstatic.com/ct/log_list/all_logs_list.json',
         'blacklist': yaml.safe_load(open('streaming/transparency.yml'))['transparency']['blacklist']
