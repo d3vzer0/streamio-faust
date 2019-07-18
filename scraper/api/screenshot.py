@@ -16,6 +16,7 @@ class Screenshot():
             print("Screenshot for {0}".format(self.url))
             driver.get(self.url)
             screenshot_data = driver.get_screenshot_as_png()
+            driver.close()
             driver.quit()
             Snapshot(self.url).create(screenshot_data)
 
@@ -25,5 +26,6 @@ class Screenshot():
 
         except Exception as err:
             print(err)
+            driver.close()
             driver.quit()
             pass
