@@ -7,10 +7,13 @@ from fuzzywuzzy import fuzz
 from faust import web
 import csv
 import re
+import base64
+import json
 
 # Topics
 cert_topic = app.topic('ct-certs-decoded')
 matched_topic = app.topic('wordmatching-hits')
+confirmed_topic = app.topic('matching-confirmed')
  
 # Tables
 matching_table = app.Table('matching_table', default=list)
@@ -88,3 +91,27 @@ class APIWhitelist(web.View):
         return self.json({'result': 'success', 'message':'Refreshed whitelist'})
 
 app.web.blueprints.add('/filters/', api_filters)
+
+# Confirmation blueprint
+api_confirm = web.Blueprint('api_confirm')
+
+@api_confirm.route('/confirm', name='api_confirm')
+class APIConfirm(web.View):
+    async def post(self, request: web.Request) -> web.Response:
+        try:
+            payload = await request.json()
+            first_match = json.loads(Matches.objects(url=payload['url']).first().to_json())
+            first_screenshot = Snapshots.objects(url=payload['url']).first()
+            if first_screenshot:
+                snapshot_file = first_screenshot.screenshot.read()
+                result = {'state': payload['state'], 'match': first_match, 'screenshot':base64.b64encode(snapshot_file)}
+            else:
+                result = {'state': payload['state'], 'match': first_match }
+            await confirmed_topic.send(value=result)
+            return self.json({'result': 'success', 'message':result})
+
+        except Exception as err:
+            return self.json({'result': 'failed', 'message':'Unable to process confirmation'})
+
+app.web.blueprints.add('/matches/', api_confirm)
+
