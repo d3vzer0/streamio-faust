@@ -19,13 +19,14 @@ class Screenshot():
             driver.close()
             driver.quit()
             Snapshot(self.url).create(screenshot_data)
+            return screenshot_data
 
         except WebDriverException as err:
             print(err)
-            pass
+            return None
 
         except Exception as err:
             print(err)
             driver.close()
             driver.quit()
-            pass
+            return None
