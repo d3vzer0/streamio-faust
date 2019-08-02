@@ -18,9 +18,10 @@ class Snapshot:
             snapshot_output.screenshot.put(data, content_type="image/png")
             snapshot_output.save()
 
-            result = {"result": "success", "data": "Succesfully inserted snapshot result"}
+            result = {"result": "success", "data": "Succesfully inserted snapshot result", "sha256":sha256, "dhash":dhash}
 
         except Exception as err:
+            print(err)
             result = {"result": "failed", "data": "Failed to insert snapshot"}
 
         return result

@@ -14,18 +14,10 @@ db.connect(
 source_options = ('transparency', 'phishtank')
 matching_types = ('regex', 'fuzzy')
 
-class Whitelist(db.Document):
-    domain = db.StringField(required=True, max_length=500, unique=True)
-
-class Regex(db.Document):
-    value = db.StringField(required=True, max_length=500, unique=True)
-    score = db.IntField(required=False, default=80)
-
-class Fuzzy(db.Document):
-    value = db.StringField(required=True, unique=True)
-    likelihood = db.IntField(required=True)
-    score = db.IntField(required=False, default=80)
-
+class ComparePages(db.Document):
+    url = db.StringField(max_length=1000, required=True, unique=True)
+    score = db.IntField(required=True, max_value=100)
+    tag = db.StringField(required=True, max_length=100)
 
 class Responses(db.EmbeddedDocument):
     response_code = db.IntField(required=False)
@@ -47,7 +39,6 @@ class Matching(db.EmbeddedDocument):
     name = db.StringField(required=True, choices=matching_types)
     value = db.StringField(required=True, max_length=500)
     data = db.DictField(unique=True)
-
 
 class Matches(db.Document):
     timestamp = db.DateTimeField(required=False, default=datetime.datetime.now)

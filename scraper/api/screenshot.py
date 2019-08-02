@@ -1,4 +1,3 @@
-from streaming.scraper.api.snapshot import Snapshot
 from streaming.config import config
 from selenium.common.exceptions import WebDriverException
 from selenium import webdriver
@@ -18,7 +17,6 @@ class Screenshot():
             screenshot_data = driver.get_screenshot_as_png()
             driver.close()
             driver.quit()
-            Snapshot(self.url).create(screenshot_data)
             return screenshot_data
 
         except WebDriverException as err:
