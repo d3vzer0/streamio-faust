@@ -16,7 +16,7 @@ config = {
         'base_url': 'https://urlscan.io/api/v1'
     },
     'transparency': {
-        'base_url': 'https://www.gstatic.com/ct/log_list/all_logs_list.json',
+        'base_url': 'https://www.gstatic.com/ct/log_list/v2/log_list.json',
         'blacklist': yaml.safe_load(open('streaming/transparency.yml'))['transparency']['blacklist']
     },
     'selenium': {
@@ -32,8 +32,8 @@ config = {
         'password': os.getenv('MONGO_PASS', None)
     },
     'stream': {
-        'app': os.getenv('STREAM_TYPE', 'streaming.scraper'),
-        'name': os.getenv('STREAM_NAME', 'nootnoot-scraper'),
+        'app': os.getenv('STREAM_TYPE', 'streaming.transparency'),
+        'name': os.getenv('STREAM_NAME', 'nootnoot-transparency'),
         'host': os.getenv('KAFKA_HOST', 'kafka://127.0.0.1:29092')
     },
     'selenium': {

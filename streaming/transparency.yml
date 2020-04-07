@@ -1,0 +1,25 @@
+transparency:
+  blacklist:
+    - https://flimsy.ct.nordu.net:8080/
+    - https://plausible.ct.nordu.net/
+    - http://ctlog.sheca.com/
+    - https://clicky.ct.letsencrypt.org/
+    - https://ct.filippo.io/behindthesofa/
+    - https://ct.ws.symantec.com/
+    - https://vega.ws.symantec.com/
+    - https://deneb.ws.symantec.com/
+    - https://sirius.ws.symantec.com/
+    - https://log.certly.io/
+    - https://ct.izenpe.com/
+    - https://ct.wosign.com/
+    - https://ctserver.cnnic.cn/
+    - https://ct.akamai.com/
+    - https://alpha.ctlogs.org/
+    - https://ct.sheca.com/
+    - https://ctlog2.wosign.com/
+    - https://ct.izenpe.eus/
+    - https://ctlog.gdca.com.cn/
+    - https://ctlog.wosign.com/
+    - https://www.certificatetransparency.cn/
+    - https://log2.gdca.com.cn/
+    - https://ctlog.api.venafi.com/
