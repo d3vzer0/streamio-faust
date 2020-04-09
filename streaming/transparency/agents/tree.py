@@ -1,4 +1,5 @@
-from streaming.app import app
+from streaming.app import app, logger
+from streaming.config import config
 from streaming.transparency.api.request import async_request
 from streaming.transparency.topics import (
     Operators, States, states_table,
@@ -17,9 +18,16 @@ async def get_tree_size(operators: faust.Stream[Operators]):
 
 @app.agent(tree_topic)
 async def compare_tree(treesizes: faust.Stream[Tree]):
+    max_drift = config['transparency']['max_drift']
     async for tree in treesizes.group_by(Tree.log):
         if tree.log not in states_table:
+            logger.info(f'log={tree.log}, tree_size={tree.tree_size}, action=update, type=tree')
             states_table[tree.log] = tree.tree_size
+
         elif tree.tree_size > states_table[tree.log]:
-            await states_topic.send(value={'log': tree.log, 'old_size':states_table[tree.log],
-                'diff': tree.tree_size-states_table[tree.log], 'tree_size':tree.tree_size})
+            if tree.tree_size > (states_table[tree.log] + max_drift):
+                logger.warn(f'log={tree.log}, new_size={tree.tree_size}, old_size={states_table[tree.log]}, action=drift, type=tree')
+                states_table[tree.log] = tree.tree_size
+            else:
+                await states_topic.send(value={'log': tree.log, 'old_size':states_table[tree.log],
+                    'diff': tree.tree_size-states_table[tree.log], 'tree_size':tree.tree_size})

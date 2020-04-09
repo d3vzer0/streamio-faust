@@ -16,8 +16,9 @@ config = {
         'base_url': 'https://urlscan.io/api/v1'
     },
     'transparency': {
+        'max_drift': os.getenv('CT_MAX_DRIFT', 1500),
         'base_url': 'https://www.gstatic.com/ct/log_list/v2/log_list.json',
-        'blacklist': yaml.safe_load(open('streaming/transparency.yml'))['transparency']['blacklist']
+        'blacklist': yaml.safe_load(open('streaming/transparency/blacklist.yml'))['transparency']['blacklist']
     },
     'selenium': {
         'host': os.getenv('GRID_HOST', 'hub:4444'),
@@ -34,7 +35,9 @@ config = {
     'stream': {
         'app': os.getenv('STREAM_TYPE', 'streaming.transparency'),
         'name': os.getenv('STREAM_NAME', 'nootnoot-transparency'),
-        'host': os.getenv('KAFKA_HOST', 'kafka://127.0.0.1:29092')
+        'host': os.getenv('KAFKA_HOST', 'kafka://127.0.0.1:29092'),
+        'partitions': os.getenv('STREAM_PARTITIONS', 4),
+        'store': os.getenv('STREAM_STORE', 'memory://')
     },
     'selenium': {
         'hub': os.getenv('SELENIUM_HUB', 'http://localhost:4444/wd/hub')

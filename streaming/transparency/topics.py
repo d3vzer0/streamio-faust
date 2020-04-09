@@ -24,10 +24,6 @@ class EncodedCert(faust.Record):
     cert: Dict
     log: str
 
-
-
-
-
 # State table containing last known record size
 states_table = app.Table('ct-operators-state', default=int)
 
