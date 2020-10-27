@@ -14,7 +14,7 @@ colorlog==4.0.2
 construct==2.9.45
 contextvars==2.3
 croniter==0.3.29
-cryptography==2.6.1
+cryptography==3.2
 faust==1.10.4
 fuzzywuzzy==0.18.0
 h11==0.8.1
